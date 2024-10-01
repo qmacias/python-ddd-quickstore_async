@@ -1,3 +1,5 @@
+import json
+
 from behave import when, then
 
 
@@ -6,9 +8,26 @@ def step_impl(context, endpoint):
     context.response = context.client.get(endpoint)
 
 
+@when('I send a PUT request to "{endpoint}" with body')
+def step_impl(context, endpoint):
+    context.url = endpoint
+    context.request_body = json.loads(context.text)
+    context.response = context.client.put(endpoint, json=context.request_body)
+
+
+@when('I send a DELETE request to "{endpoint}"')
+def step_impl(context, endpoint):
+    context.response = context.client.delete(endpoint)
+
+
 @then('the response status code should be {status_code:d}')
 def step_impl(context, status_code):
     assert context.response.status_code == status_code
+
+
+@then('the response content should be {content}')
+def step_impl(context, content):
+    assert context.response.content == content.encode()
 
 
 @then('the response content type header should be "{content_type}"')

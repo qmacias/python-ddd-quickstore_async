@@ -1,0 +1,48 @@
+from re import compile
+
+from src.contexts.shared.domain.InvalidArgumentError import InvalidArgumentError
+
+
+class BackofficeUserName(object):
+    """
+    The name must adhere to the following rules:
+        - Must consist of two or more words.
+        - Each word must start with an uppercase letter.
+        - The rest of each word must be in lowercase.
+        - The words must be separated by single spaces.
+
+    Explanation of the regex:
+        - '^': Start of the string
+        - '([A-Z][a-z]+)': First name (uppercase first letter, rest lowercase)
+        - '((\s[A-Z][a-z]+)+)': One or more additional names, each preceded by a space
+        - '$': End of the string
+    """
+    __REGEX = compile(r'^([A-Z][a-z]+)((\s[A-Z][a-z]+)+)$')
+
+    def __init__(
+            self, value: str,
+    ) -> None:
+        self._value = value
+        self.__ensure_valid_name()
+
+    def __ensure_valid_name(self) -> None:
+        if not self.__REGEX.match(self._value):
+            raise InvalidArgumentError(f'Invalid name: {self._value!r}')
+
+    @property
+    def value(self) -> str:
+        return self._value
+
+    def __hash__(self) -> int:
+        return hash(self._value)
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, self.__class__):
+            return self._value == other.value
+        return False
+
+    def __str__(self) -> str:
+        return str(self._value)
+
+    def __repr__(self) -> str:
+        return f'<{self.__class__.__name__}: value={self._value!r}>'

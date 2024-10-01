@@ -1,0 +1,56 @@
+from logging import Logger, getLogger, INFO, Formatter, StreamHandler
+from injector import Module, singleton, provider, Injector
+
+from src.contexts.shared.domain.EventBus import EventBus
+from src.contexts.shared.domain.EventSubscriber import EventSubscriber
+from src.contexts.shared.infrastructure.InMemoryEventBus import InMemoryEventBus
+
+from src.apps.backoffice.backend.deps import BackofficeModule
+
+
+class LoggerModule(Module):
+    @singleton
+    @provider
+    def logger(self) -> Logger:
+        return config_logger(__name__)
+
+
+def config_logger(name: str) -> Logger:
+    logger = getLogger(name)
+
+    logger.setLevel(INFO)
+
+    formatter = Formatter(
+        '%(levelname)s:%(message)s:%(events)s'
+    )
+
+    stream_handler = StreamHandler()
+    stream_handler.setFormatter(formatter)
+
+    logger.addHandler(stream_handler)
+
+    return logger
+
+
+class EventBusModule(Module):
+    @singleton
+    @provider
+    def event_bus(self) -> EventBus:
+        event_bus = InMemoryEventBus()
+
+        return event_bus
+
+
+def configure_event_bus(
+        event_bus: EventBus, subscribers: list[EventSubscriber],
+) -> None:
+    event_bus.add_subscribers(subscribers)
+
+
+container = Injector(
+    [
+        LoggerModule(), EventBusModule(), BackofficeModule(),
+    ], auto_bind=True
+)
+
+# configure_event_bus(event_bus=container.get(EventBus), subscribers=container.get(list[EventSubscriber]))

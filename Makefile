@@ -24,6 +24,7 @@ deps:
 test:
 	$(BEHAVE) tests/apps/backoffice/backend/features
 	$(BEHAVE) tests/apps/quickstore/backend/features
+	$(PYTHON) -m unittest discover -s ./tests/contexts/backoffice -p '*Test.py'
 
 .PHONY: run/backoffice-backend
 run/backoffice-backend:
