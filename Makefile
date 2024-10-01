@@ -1,0 +1,34 @@
+PIP := pip
+PYTHON := python
+BEHAVE := behave
+PYCLEAN := pyclean
+
+all: help
+help:
+	$(PYTHON) main.py --help
+
+.PHONY: clean
+clean:
+	$(PYCLEAN) --verbose .
+
+.PHONY: build
+build:
+	$(PYTHON) -m venv .venv
+	$(PIP) install --no-cache-dir -r requirements.txt
+
+.PHONY: deps
+deps:
+	$(PIP) install --no-cache-dir -r requirements.txt
+
+.PHONY: test
+test:
+	$(BEHAVE) tests/apps/backoffice/backend/features
+	$(BEHAVE) tests/apps/quickstore/backend/features
+
+.PHONY: run/backoffice-backend
+run/backoffice-backend:
+	$(PYTHON) main.py --context backoffice-backend
+
+.PHONY: run/quickstore-backend
+run/quickstore-backend:
+	$(PYTHON) main.py --context quickstore-backend

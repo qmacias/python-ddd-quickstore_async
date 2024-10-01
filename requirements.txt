@@ -1,0 +1,10 @@
+behave==1.2.6
+httpie==3.2.3
+injector==0.22.0
+faker==26.0.0
+pyclean==3.0.0
+fastapi[all]==0.111.0
+uvicorn[standard]==0.30.1
+asyncpg==0.29.0
+aiosqlite==0.20.0
+sqlalchemy[asyncio]==2.0.34
