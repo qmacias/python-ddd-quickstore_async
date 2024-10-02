@@ -45,8 +45,8 @@ class BackofficeModule(Module):
     @singleton
     @provider
     def backoffice_user_repository(self, session: sessionmaker[Session]) -> BackofficeUserRepository:
-        backoffice_repository = InMemoryBackofficeUserRepository()
-        # backoffice_repository = SQLiteBackofficeUserRepository(session)
+        # backoffice_repository = InMemoryBackofficeUserRepository()
+        backoffice_repository = SQLiteBackofficeUserRepository(session)
 
         return backoffice_repository
 
@@ -60,8 +60,8 @@ class BackofficeModule(Module):
     @singleton
     @provider
     def backoffice_product_repository(self, session: sessionmaker[Session]) -> BackofficeProductRepository:
-        backoffice_repository = InMemoryBackofficeProductRepository()
-        # backoffice_repository = SQLiteBackofficeProductRepository(session)
+        # backoffice_repository = InMemoryBackofficeProductRepository()
+        backoffice_repository = SQLiteBackofficeProductRepository(session)
 
         return backoffice_repository
 
