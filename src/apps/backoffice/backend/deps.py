@@ -13,6 +13,11 @@ from src.contexts.backoffice.users.infrastructure.InMemoryBackofficeUserReposito
 from src.contexts.backoffice.users.application.BackofficeUserCreator import BackofficeUserCreator
 from src.contexts.backoffice.users.domain.BackofficeUserRepository import BackofficeUserRepository
 
+from src.contexts.backoffice.products.infrastructure.sqlite.SQLiteBackofficeProductRepository import SQLiteBackofficeProductRepository
+from src.contexts.backoffice.products.infrastructure.InMemoryBackofficeProductRepository import InMemoryBackofficeProductRepository
+from src.contexts.backoffice.products.application.BackofficeProductCreator import BackofficeProductCreator
+from src.contexts.backoffice.products.domain.BackofficeProductRepository import BackofficeProductRepository
+
 
 class BackofficeModule(Module):
     @singleton
@@ -51,3 +56,18 @@ class BackofficeModule(Module):
             self, backoffice_repository: BackofficeUserRepository, event_bus: EventBus, logger: Logger,
     ) -> BackofficeUserCreator:
         return BackofficeUserCreator(backoffice_repository, event_bus, logger)
+
+    @singleton
+    @provider
+    def backoffice_product_repository(self, session: sessionmaker[Session]) -> BackofficeProductRepository:
+        # backoffice_repository = InMemoryBackofficeProductRepository()
+        backoffice_repository = SQLiteBackofficeProductRepository(session)
+
+        return backoffice_repository
+
+    @singleton
+    @provider
+    def backoffice_product_creator(
+            self, backoffice_repository: BackofficeProductRepository, event_bus: EventBus, logger: Logger,
+    ) -> BackofficeProductCreator:
+        return BackofficeProductCreator(backoffice_repository, event_bus, logger)
