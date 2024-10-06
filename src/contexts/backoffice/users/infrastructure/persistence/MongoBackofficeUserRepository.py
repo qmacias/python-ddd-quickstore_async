@@ -14,10 +14,12 @@ class MongoBackofficeUserRepository(MongoRepository, BackofficeUserRepository):
     ) -> None:
         super().__init__(mongodb_uri)
 
-    def get_database_name(self) -> str:
+    @property
+    def database_name(self) -> str:
         return self.__DATABASE_NAME
 
-    def get_collection_name(self) -> str:
+    @property
+    def collection_name(self) -> str:
         return self.__COLLECTION_NAME
 
     async def save(self, user: BackofficeUser) -> None:

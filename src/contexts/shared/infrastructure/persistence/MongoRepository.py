@@ -11,15 +11,17 @@ class MongoRepository(ABC):
             mongodb_uri: str,
     ) -> None:
         self.__client = AsyncIOMotorClient(mongodb_uri)
-        self.__database = self.__client.get_database(self.get_database_name())
-        self.__collection = self.__database.get_collection(self.get_collection_name())
+        self.__database = self.__client.get_database(self.database_name)
+        self.__collection = self.__database.get_collection(self.collection_name)
 
+    @property
     @abstractmethod
-    def get_database_name(self) -> str:
+    def database_name(self) -> str:
         pass
 
+    @property
     @abstractmethod
-    def get_collection_name(self) -> str:
+    def collection_name(self) -> str:
         pass
 
     async def persist(self, entity: AggregateRoot) -> None:
