@@ -1,10 +1,10 @@
-from motor.motor_asyncio import AsyncIOMotorClient
+from src.contexts.shared.infrastructure.persistence.MongoRepository import MongoRepository
 
 from src.contexts.backoffice.products.domain.BackofficeProduct import BackofficeProduct
 from src.contexts.backoffice.products.domain.BackofficeProductRepository import BackofficeProductRepository
 
 
-class MongoBackofficeProductRepository(BackofficeProductRepository):
+class MongoBackofficeProductRepository(MongoRepository, BackofficeProductRepository):
     __DATABASE_NAME = 'backoffice'
     __COLLECTION_NAME = 'backoffice_products'
 
@@ -12,13 +12,13 @@ class MongoBackofficeProductRepository(BackofficeProductRepository):
             self,
             mongodb_uri: str,
     ) -> None:
-        self.__client = AsyncIOMotorClient(mongodb_uri)
-        self.__database = self.__client.get_database(self.__DATABASE_NAME)
-        self.__collection = self.__database.get_collection(self.__COLLECTION_NAME)
+        super().__init__(mongodb_uri)
+
+    def get_database_name(self) -> str:
+        return self.__DATABASE_NAME
+
+    def get_collection_name(self) -> str:
+        return self.__COLLECTION_NAME
 
     async def save(self, product: BackofficeProduct) -> None:
-        document = product.to_primitives()
-
-        await self.__collection.update_one(
-            {'_id': document.pop('id')}, {'$set': document}, upsert=True,
-        )
+        await self.persist(product)
