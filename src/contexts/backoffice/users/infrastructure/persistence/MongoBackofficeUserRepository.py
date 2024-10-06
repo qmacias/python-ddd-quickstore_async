@@ -23,4 +23,4 @@ class MongoBackofficeUserRepository(MongoRepository, BackofficeUserRepository):
         return self.__COLLECTION_NAME
 
     async def save(self, user: BackofficeUser) -> None:
-        await self.persist(user)
+        await self.persist(user.id.value, user)

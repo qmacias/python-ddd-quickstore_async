@@ -23,4 +23,4 @@ class MongoBackofficeProductRepository(MongoRepository, BackofficeProductReposit
         return self.__COLLECTION_NAME
 
     async def save(self, product: BackofficeProduct) -> None:
-        await self.persist(product)
+        await self.persist(product.id.value, product)

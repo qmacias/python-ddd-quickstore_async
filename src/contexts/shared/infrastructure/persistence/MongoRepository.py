@@ -24,9 +24,9 @@ class MongoRepository(ABC):
     def collection_name(self) -> str:
         pass
 
-    async def persist(self, entity: AggregateRoot) -> None:
-        primitives = entity.to_primitives()
+    async def persist(self, id: str, entity: AggregateRoot) -> None:
+        document = entity.to_primitives() | {'_id': id}
 
         await self.__collection.update_one(
-            {'_id': primitives.pop('id')}, {'$set': primitives}, upsert=True,
+            {'_id': document.pop('id')}, {'$set': document}, upsert=True,
         )
