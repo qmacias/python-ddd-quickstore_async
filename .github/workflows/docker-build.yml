@@ -15,9 +15,19 @@ jobs:
                 python-version: '3.11'
 
             - name: Build project
+              env:
+                BACKOFFICE_MONGODB_URI: ${{ secrets.BACKOFFICE_MONGODB_URI }}
+                BACKOFFICE_BACKEND_APP: ${{ secrets.BACKOFFICE_BACKEND_APP }}
+                BACKOFFICE_BACKEND_APP_HOST: ${{ secrets.BACKOFFICE_BACKEND_APP_HOST }}
+                BACKOFFICE_BACKEND_APP_PORT: ${{ secrets.BACKOFFICE_BACKEND_APP_PORT }}
               run: make build
 
             - name: Run tests
+              env:
+                BACKOFFICE_MONGODB_URI: ${{ secrets.BACKOFFICE_MONGODB_URI }}
+                BACKOFFICE_BACKEND_APP: ${{ secrets.BACKOFFICE_BACKEND_APP }}
+                BACKOFFICE_BACKEND_APP_HOST: ${{ secrets.BACKOFFICE_BACKEND_APP_HOST }}
+                BACKOFFICE_BACKEND_APP_PORT: ${{ secrets.BACKOFFICE_BACKEND_APP_PORT }}
               run: make test
 
     build:

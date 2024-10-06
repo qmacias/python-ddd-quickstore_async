@@ -3,5 +3,7 @@ httpie==3.2.3
 injector==0.22.0
 faker==26.0.0
 pyclean==3.0.0
+pytest==8.3.3
+motor==3.6.0
 fastapi[all]==0.111.0
 uvicorn[standard]==0.30.1
