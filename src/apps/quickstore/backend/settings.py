@@ -3,14 +3,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class QuickstoreSettings(BaseSettings):
     model_config = SettingsConfigDict(
-        case_sensitive=False,
         env_file='.env', extra='ignore',
-        env_prefix='QUICKSTORE_', env_file_encoding='utf-8',
+        env_file_encoding='utf-8', case_sensitive=False,
     )
 
-    backend_app: str
-    backend_app_host: str
-    backend_app_port: int
+    MONGODB_URI: str
+    QUICKSTORE_BACKEND_APP: str
+    QUICKSTORE_BACKEND_APP_HOST: str
+    QUICKSTORE_BACKEND_APP_PORT: int
 
 
-quickstore_backend_settings = QuickstoreSettings()
+settings = QuickstoreSettings()

@@ -1,9 +1,9 @@
 import uvicorn
 
-from src.apps.backoffice.backend.settings import backoffice_backend_settings
+from src.apps.backoffice.backend.settings import settings
 
 
 def run_backoffice_backend() -> None:
-    uvicorn.run(app=backoffice_backend_settings.backend_app,
-                host=backoffice_backend_settings.backend_app_host,
-                port=backoffice_backend_settings.backend_app_port, reload=True)
+    uvicorn.run(app=settings.BACKOFFICE_BACKEND_APP,
+                host=settings.BACKOFFICE_BACKEND_APP_HOST,
+                port=settings.BACKOFFICE_BACKEND_APP_PORT, reload=True)
