@@ -1,8 +1,8 @@
 from logging import Logger
 from injector import Module, singleton, provider
 
-from src.apps.backoffice.backend.settings import settings
 from src.contexts.shared.domain.EventBus import EventBus
+from src.apps.backoffice.backend.settings import settings
 
 from src.contexts.backoffice.users.infrastructure.persistence.MongoBackofficeUserRepository import MongoBackofficeUserRepository
 from src.contexts.backoffice.users.infrastructure.persistence.InMemoryBackofficeUserRepository import InMemoryBackofficeUserRepository
