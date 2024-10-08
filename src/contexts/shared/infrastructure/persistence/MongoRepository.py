@@ -24,6 +24,9 @@ class MongoRepository(ABC):
     def collection_name(self) -> str:
         pass
 
+    def collection(self):
+        return self.__collection
+
     async def persist(self, id: str, entity: AggregateRoot) -> None:
         document = entity.to_primitives() | {'_id': id}
 

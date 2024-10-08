@@ -6,6 +6,7 @@ from src.contexts.shared.domain.EventSubscriber import EventSubscriber
 from src.contexts.shared.infrastructure.InMemoryEventBus import InMemoryEventBus
 
 from src.apps.backoffice.backend.deps import BackofficeModule
+from src.apps.quickstore.backend.deps import QuickstoreModule, QuickstoreEventSubscribersModule
 
 
 class LoggerModule(Module):
@@ -42,7 +43,8 @@ class EventBusModule(Module):
 
 
 def configure_event_bus(
-        event_bus: EventBus, subscribers: list[EventSubscriber],
+        event_bus: EventBus,
+        subscribers: list[EventSubscriber],
 ) -> None:
     event_bus.add_subscribers(subscribers)
 
@@ -50,7 +52,8 @@ def configure_event_bus(
 container = Injector(
     [
         LoggerModule(), EventBusModule(), BackofficeModule(),
+        QuickstoreModule(), QuickstoreEventSubscribersModule(),
     ], auto_bind=True
 )
 
-# configure_event_bus(event_bus=container.get(EventBus), subscribers=container.get(list[EventSubscriber]))
+configure_event_bus(event_bus=container.get(EventBus), subscribers=container.get(list[EventSubscriber]))
