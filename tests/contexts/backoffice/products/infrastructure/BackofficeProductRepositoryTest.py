@@ -1,3 +1,4 @@
+from typing import Callable, Awaitable
 from unittest import IsolatedAsyncioTestCase
 
 from src.apps.container import container
@@ -19,7 +20,12 @@ class BackofficeProductRepositoryTest(IsolatedAsyncioTestCase):
         MotherCreator.add_provider(ProductNameProvider)
 
         product = BackofficeProductMother.random()
-        repository = container.get(BackofficeProductRepository)
+
+        repository_provider = container.get(
+            Callable[[], Awaitable[BackofficeProductRepository]],
+        )
+
+        repository = await repository_provider()
 
         await repository.save(product)
 

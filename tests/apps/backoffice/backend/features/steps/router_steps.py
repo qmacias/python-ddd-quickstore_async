@@ -10,7 +10,7 @@ def step_impl(context, endpoint):
 
 @when('I send a PUT request to "{endpoint}" with body')
 def step_impl(context, endpoint):
-    context.url = endpoint
+    context.uri = endpoint
     context.request_body = json.loads(context.text)
     context.response = context.client.put(endpoint, json=context.request_body)
 

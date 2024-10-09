@@ -1,6 +1,6 @@
 import json
 
-from typing import Dict, Any
+from typing import Dict, Any, Callable, Awaitable
 
 from fastapi import APIRouter, Request, status
 from fastapi.responses import Response, PlainTextResponse
@@ -17,7 +17,13 @@ async def create_product(product_id: str, request: Request) -> Response:
     try:
         body: Dict[str, Any] = await request.json()
 
-        await container.get(BackofficeProductCreator)(product_id, body.get('name'))
+        creator_provider = container.get(
+            Callable[[], Awaitable[BackofficeProductCreator]],
+        )
+
+        creator = await creator_provider()
+
+        await creator(product_id, body.get('name'))
 
         return PlainTextResponse(None, status.HTTP_201_CREATED, {'Location': request.url.path})
     except InvalidArgumentError as e:

@@ -1,3 +1,5 @@
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from src.contexts.shared.infrastructure.persistence.MongoRepository import MongoRepository
 
 from src.contexts.backoffice.users.domain.BackofficeUser import BackofficeUser
@@ -9,10 +11,9 @@ class MongoBackofficeUserRepository(MongoRepository, BackofficeUserRepository):
     __COLLECTION_NAME = 'backoffice_users'
 
     def __init__(
-            self,
-            mongodb_uri: str,
+            self, client: AsyncIOMotorClient,
     ) -> None:
-        super().__init__(mongodb_uri)
+        super().__init__(client)
 
     @property
     def database_name(self) -> str:

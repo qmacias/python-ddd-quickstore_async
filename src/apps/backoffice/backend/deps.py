@@ -1,8 +1,13 @@
 from logging import Logger
+from typing import Awaitable, Callable
+
 from injector import Module, singleton, provider
 
 from src.contexts.shared.domain.EventBus import EventBus
 from src.apps.backoffice.backend.settings import settings
+
+from src.contexts.shared.infrastructure.persistence.MongoConfig import MongoConfig
+from src.contexts.shared.infrastructure.persistence.MongoClientFactory import MongoClientFactory
 
 from src.contexts.backoffice.users.infrastructure.persistence.MongoBackofficeUserRepository import MongoBackofficeUserRepository
 from src.contexts.backoffice.users.application.BackofficeUserCreator import BackofficeUserCreator
@@ -15,41 +20,68 @@ from src.contexts.backoffice.products.domain.BackofficeProductRepository import 
 from tests.contexts.shared.infrastructure.arranger.EnvironmentArranger import EnvironmentArranger
 from tests.contexts.shared.infrastructure.arranger.MongoEnvironmentArranger import MongoEnvironmentArranger
 
-BACKOFFICE_MONGODB_URI = settings.MONGODB_URI
-
 
 class BackofficeModule(Module):
     @singleton
     @provider
-    def environment_arranger(self) -> EnvironmentArranger:
-        return MongoEnvironmentArranger(BACKOFFICE_MONGODB_URI, 'backoffice')
+    def config(self) -> MongoConfig:
+        config = MongoConfig(uri=settings.MONGODB_URI)
+
+        return config
 
     @singleton
     @provider
-    def backoffice_user_repository(self) -> BackofficeUserRepository:
-        # backoffice_repository = InMemoryBackofficeUserRepository()
-        backoffice_repository = MongoBackofficeUserRepository(BACKOFFICE_MONGODB_URI)
+    def environment_arranger(self, config: MongoConfig) -> EnvironmentArranger:
+        arranger = MongoEnvironmentArranger(config.uri, 'backoffice')
 
-        return backoffice_repository
+        return arranger
+
+    @singleton
+    @provider
+    def backoffice_user_repository(self, config: MongoConfig) -> Callable[[], Awaitable[BackofficeUserRepository]]:
+        async def __get_backoffice_user_repository() -> BackofficeUserRepository:
+            client = await MongoClientFactory.create_client('backoffice-user', config)
+
+            return MongoBackofficeUserRepository(client)
+
+        return __get_backoffice_user_repository
 
     @singleton
     @provider
     def backoffice_user_creator(
-            self, backoffice_repository: BackofficeUserRepository, event_bus: EventBus, logger: Logger,
-    ) -> BackofficeUserCreator:
-        return BackofficeUserCreator(backoffice_repository, event_bus, logger)
+            self,
+            backoffice_repository_provider: Callable[[], Awaitable[BackofficeUserRepository]],
+            event_bus: EventBus,
+            logger: Logger,
+    ) -> Callable[[], Awaitable[BackofficeUserCreator]]:
+        async def __get_backoffice_user_creator() -> BackofficeUserCreator:
+            repository = await backoffice_repository_provider()
+
+            return BackofficeUserCreator(repository, event_bus, logger)
+
+        return __get_backoffice_user_creator
 
     @singleton
     @provider
-    def backoffice_product_repository(self) -> BackofficeProductRepository:
-        # backoffice_repository = InMemoryBackofficeProductRepository()
-        backoffice_repository = MongoBackofficeProductRepository(BACKOFFICE_MONGODB_URI)
+    def backoffice_product_repository(self, config: MongoConfig) -> Callable[[], Awaitable[BackofficeProductRepository]]:
+        async def __get_backoffice_product_repository() -> BackofficeProductRepository:
+            client = await MongoClientFactory.create_client('backoffice-product', config)
 
-        return backoffice_repository
+            return MongoBackofficeProductRepository(client)
+
+        return __get_backoffice_product_repository
 
     @singleton
     @provider
     def backoffice_product_creator(
-            self, backoffice_repository: BackofficeProductRepository, event_bus: EventBus, logger: Logger,
-    ) -> BackofficeProductCreator:
-        return BackofficeProductCreator(backoffice_repository, event_bus, logger)
+            self,
+            backoffice_repository_provider: Callable[[], Awaitable[BackofficeProductRepository]],
+            event_bus: EventBus,
+            logger: Logger,
+    ) -> Callable[[], Awaitable[BackofficeProductCreator]]:
+        async def __get_backoffice_product_creator() -> BackofficeProductCreator:
+            repository = await backoffice_repository_provider()
+
+            return BackofficeProductCreator(repository, event_bus, logger)
+
+        return __get_backoffice_product_creator
