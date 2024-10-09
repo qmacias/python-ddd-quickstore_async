@@ -5,17 +5,15 @@ from src.contexts.shared.domain.EventBus import EventBus
 from src.apps.backoffice.backend.settings import settings
 
 from src.contexts.backoffice.users.infrastructure.persistence.MongoBackofficeUserRepository import MongoBackofficeUserRepository
-from src.contexts.backoffice.users.infrastructure.persistence.InMemoryBackofficeUserRepository import InMemoryBackofficeUserRepository
 from src.contexts.backoffice.users.application.BackofficeUserCreator import BackofficeUserCreator
 from src.contexts.backoffice.users.domain.BackofficeUserRepository import BackofficeUserRepository
 
 from src.contexts.backoffice.products.infrastructure.persistence.MongoBackofficeProductRepository import MongoBackofficeProductRepository
-from src.contexts.backoffice.products.infrastructure.persistence.InMemoryBackofficeProductRepository import InMemoryBackofficeProductRepository
 from src.contexts.backoffice.products.application.BackofficeProductCreator import BackofficeProductCreator
 from src.contexts.backoffice.products.domain.BackofficeProductRepository import BackofficeProductRepository
 
 from tests.contexts.shared.infrastructure.arranger.EnvironmentArranger import EnvironmentArranger
-from tests.contexts.shared.infrastructure.arranger.mongo.MongoEnvironmentArranger import MongoEnvironmentArranger
+from tests.contexts.shared.infrastructure.arranger.MongoEnvironmentArranger import MongoEnvironmentArranger
 
 BACKOFFICE_MONGODB_URI = settings.MONGODB_URI
 
