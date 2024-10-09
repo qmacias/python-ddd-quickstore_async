@@ -1,10 +1,10 @@
-from logging import Logger
-from typing import Awaitable, Callable
-
 from injector import Module, singleton, provider
+from typing import Awaitable, Callable
+from logging import Logger
+
+from settings import settings
 
 from src.contexts.shared.domain.EventBus import EventBus
-from src.apps.backoffice.backend.settings import settings
 
 from src.contexts.shared.infrastructure.persistence.MongoConfig import MongoConfig
 from src.contexts.shared.infrastructure.persistence.MongoClientFactory import MongoClientFactory

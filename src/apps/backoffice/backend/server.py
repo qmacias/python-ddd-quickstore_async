@@ -1,6 +1,6 @@
 import uvicorn
 
-from src.apps.backoffice.backend.settings import settings
+from settings import settings
 
 
 def run_backoffice_backend() -> None:

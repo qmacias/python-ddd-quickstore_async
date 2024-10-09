@@ -1,6 +1,6 @@
 import uvicorn
 
-from src.apps.quickstore.backend.settings import settings
+from settings import settings
 
 
 def run_quickstore_backend() -> None:
