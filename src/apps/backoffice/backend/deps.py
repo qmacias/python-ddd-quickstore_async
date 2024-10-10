@@ -31,7 +31,7 @@ class BackofficeModule(Module):
     @provider
     def backoffice_user_repository(self, config: MongoConfig) -> Callable[[], Awaitable[BackofficeUserRepository]]:
         async def __get_backoffice_user_repository() -> BackofficeUserRepository:
-            client = await MongoClientFactory.create_client('backoffice-users', config)
+            client = await MongoClientFactory.create_client('backoffice-user', config)
 
             return MongoBackofficeUserRepository(client)
 
@@ -46,9 +46,9 @@ class BackofficeModule(Module):
             logger: Logger,
     ) -> Callable[[], Awaitable[BackofficeUserCreator]]:
         async def __get_backoffice_user_creator() -> BackofficeUserCreator:
-            backoffice_repository = await backoffice_repository_provider()
+            repository = await backoffice_repository_provider()
 
-            return BackofficeUserCreator(backoffice_repository, event_bus, logger)
+            return BackofficeUserCreator(repository, event_bus, logger)
 
         return __get_backoffice_user_creator
 
@@ -56,7 +56,7 @@ class BackofficeModule(Module):
     @provider
     def backoffice_product_repository(self, config: MongoConfig) -> Callable[[], Awaitable[BackofficeProductRepository]]:
         async def __get_backoffice_product_repository() -> BackofficeProductRepository:
-            client = await MongoClientFactory.create_client('backoffice-products', config)
+            client = await MongoClientFactory.create_client('backoffice-product', config)
 
             return MongoBackofficeProductRepository(client)
 
@@ -71,8 +71,8 @@ class BackofficeModule(Module):
             logger: Logger,
     ) -> Callable[[], Awaitable[BackofficeProductCreator]]:
         async def __get_backoffice_product_creator() -> BackofficeProductCreator:
-            backoffice_repository = await backoffice_repository_provider()
+            repository = await backoffice_repository_provider()
 
-            return BackofficeProductCreator(backoffice_repository, event_bus, logger)
+            return BackofficeProductCreator(repository, event_bus, logger)
 
         return __get_backoffice_product_creator
