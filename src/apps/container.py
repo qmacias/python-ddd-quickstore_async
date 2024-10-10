@@ -4,6 +4,7 @@ from logging import Logger, getLogger, INFO, Formatter, StreamHandler
 from settings import settings
 
 from src.apps.backoffice.backend.deps import BackofficeModule
+from src.apps.quickstore.backend.deps import QuickstoreModule
 
 from src.contexts.shared.infrastructure.persistence.MongoConfig import MongoConfig
 from src.contexts.shared.infrastructure.InMemoryEventBus import InMemoryEventBus
@@ -61,8 +62,8 @@ class MongoConfigModule(Module):
 
 container = Injector(
     [
-        LoggerModule(), EventBusModule(),
-        MongoConfigModule, BackofficeModule(),
+        LoggerModule(), EventBusModule(), MongoConfigModule,
+        BackofficeModule(), QuickstoreModule(),
     ], auto_bind=True
 )
 
