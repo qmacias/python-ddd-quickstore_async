@@ -2,8 +2,6 @@ from injector import Module, singleton, provider
 from typing import Awaitable, Callable
 from logging import Logger
 
-from settings import settings
-
 from src.contexts.shared.domain.EventBus import EventBus
 
 from src.contexts.shared.infrastructure.persistence.MongoConfig import MongoConfig
@@ -24,14 +22,7 @@ from tests.contexts.shared.infrastructure.arranger.MongoEnvironmentArranger impo
 class BackofficeModule(Module):
     @singleton
     @provider
-    def config(self) -> MongoConfig:
-        config = MongoConfig(uri=settings.MONGODB_URI)
-
-        return config
-
-    @singleton
-    @provider
-    def environment_arranger(self, config: MongoConfig) -> EnvironmentArranger:
+    def backoffice_environment_arranger(self, config: MongoConfig) -> EnvironmentArranger:
         arranger = MongoEnvironmentArranger(config.uri, 'backoffice')
 
         return arranger

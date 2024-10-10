@@ -1,11 +1,14 @@
-from logging import Logger, getLogger, INFO, Formatter, StreamHandler
 from injector import Module, singleton, provider, Injector
+from logging import Logger, getLogger, INFO, Formatter, StreamHandler
 
-from src.contexts.shared.domain.EventBus import EventBus
-from src.contexts.shared.domain.EventSubscriber import EventSubscriber
-from src.contexts.shared.infrastructure.InMemoryEventBus import InMemoryEventBus
+from settings import settings
 
 from src.apps.backoffice.backend.deps import BackofficeModule
+
+from src.contexts.shared.infrastructure.persistence.MongoConfig import MongoConfig
+from src.contexts.shared.infrastructure.InMemoryEventBus import InMemoryEventBus
+from src.contexts.shared.domain.EventSubscriber import EventSubscriber
+from src.contexts.shared.domain.EventBus import EventBus
 
 
 class LoggerModule(Module):
@@ -47,9 +50,19 @@ def configure_event_bus(
     event_bus.add_subscribers(subscribers)
 
 
+class MongoConfigModule(Module):
+    @singleton
+    @provider
+    def config(self) -> MongoConfig:
+        config = MongoConfig(uri=settings.MONGODB_URI)
+
+        return config
+
+
 container = Injector(
     [
-        LoggerModule(), EventBusModule(), BackofficeModule(),
+        LoggerModule(), EventBusModule(),
+        MongoConfigModule, BackofficeModule(),
     ], auto_bind=True
 )
 
