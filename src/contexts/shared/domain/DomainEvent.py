@@ -17,10 +17,6 @@ class DomainEvent(ABC):
         self._event_id = event_id or str(uuid4())
         self._occurred_on = occurred_on or datetime.now()
 
-    @abstractmethod
-    def to_primitives(self) -> Any:
-        pass
-
     @property
     def event_name(self) -> str:
         return self._event_name
@@ -41,3 +37,7 @@ class DomainEvent(ABC):
         if self.__class__ == other.__class__:
             return self._aggregate_id == other.aggregate_id
         return False
+
+    @abstractmethod
+    def to_primitives(self) -> Any:
+        pass

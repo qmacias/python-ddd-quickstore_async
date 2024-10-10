@@ -22,11 +22,12 @@ deps:
 
 .PHONY: test
 test:
-	$(BEHAVE) tests/apps/quickstore/backend/features
 	$(BEHAVE) tests/apps/backoffice/backend/features/users
 	$(BEHAVE) tests/apps/backoffice/backend/features/products
 	$(PYTHON) -m unittest discover -s ./tests/contexts/backoffice/users -p '*Test.py'
 	$(PYTHON) -m unittest discover -s ./tests/contexts/backoffice/products -p '*Test.py'
+	$(BEHAVE) tests/apps/quickstore/backend/features
+	$(PYTHON) -m unittest discover -s ./tests/contexts/quickstore/products -p '*Test.py'
 
 .PHONY: run/backoffice-backend
 run/backoffice-backend:
