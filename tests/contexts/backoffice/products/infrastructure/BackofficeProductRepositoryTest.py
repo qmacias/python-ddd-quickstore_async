@@ -1,7 +1,8 @@
 from typing import Callable, Awaitable
 from unittest import IsolatedAsyncioTestCase
 
-from src.apps.container import container
+from src.apps.backoffice.backend.deps import backoffice_container
+
 from src.contexts.backoffice.products.domain.BackofficeProductRepository import BackofficeProductRepository
 
 from tests.contexts.shared.infrastructure.arranger.EnvironmentArranger import EnvironmentArranger
@@ -12,7 +13,7 @@ from tests.contexts.backoffice.products.domain.BackofficeProductMother import Ba
 
 class BackofficeProductRepositoryTest(IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        arranger_provider = container.get(
+        arranger_provider = backoffice_container.get(
             Callable[[], Awaitable[EnvironmentArranger]],
         )
 
@@ -25,7 +26,7 @@ class BackofficeProductRepositoryTest(IsolatedAsyncioTestCase):
 
         product = BackofficeProductMother.random()
 
-        repository_provider = container.get(
+        repository_provider = backoffice_container.get(
             Callable[[], Awaitable[BackofficeProductRepository]],
         )
 

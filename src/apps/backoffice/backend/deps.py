@@ -1,11 +1,13 @@
-from injector import Module, singleton, provider
+from injector import Module, singleton, provider, Injector
 from typing import Awaitable, Callable
 from logging import Logger
 
-from src.contexts.shared.domain.EventBus import EventBus
-
-from src.contexts.shared.infrastructure.persistence.MongoConfig import MongoConfig
 from src.contexts.shared.infrastructure.persistence.MongoClientFactory import MongoClientFactory
+from src.contexts.shared.infrastructure.persistence.MongoConfig import MongoConfig
+from src.contexts.shared.infrastructure.modules.MongoConfigModule import mongoconfig
+from src.contexts.shared.infrastructure.modules.EventBusModule import eventbus
+from src.contexts.shared.infrastructure.modules.LoggerModule import logger
+from src.contexts.shared.domain.EventBus import EventBus
 
 from src.contexts.backoffice.users.infrastructure.persistence.MongoBackofficeUserRepository import MongoBackofficeUserRepository
 from src.contexts.backoffice.users.application.BackofficeUserCreator import BackofficeUserCreator
@@ -23,18 +25,18 @@ class BackofficeModule(Module):
     @singleton
     @provider
     def backoffice_environment_arranger(self, config: MongoConfig) -> Callable[[], Awaitable[EnvironmentArranger]]:
-        async def __get_environment_arranger() -> EnvironmentArranger:
+        async def __get_backoffice_environment_arranger() -> EnvironmentArranger:
             client = await MongoClientFactory.create_client('backoffice', config)
 
             return MongoEnvironmentArranger(client, 'backoffice')
 
-        return __get_environment_arranger
+        return __get_backoffice_environment_arranger
 
     @singleton
     @provider
     def backoffice_user_repository(self, config: MongoConfig) -> Callable[[], Awaitable[BackofficeUserRepository]]:
         async def __get_backoffice_user_repository() -> BackofficeUserRepository:
-            client = await MongoClientFactory.create_client('backoffice-user', config)
+            client = await MongoClientFactory.create_client('backoffice-users', config)
 
             return MongoBackofficeUserRepository(client)
 
@@ -59,7 +61,7 @@ class BackofficeModule(Module):
     @provider
     def backoffice_product_repository(self, config: MongoConfig) -> Callable[[], Awaitable[BackofficeProductRepository]]:
         async def __get_backoffice_product_repository() -> BackofficeProductRepository:
-            client = await MongoClientFactory.create_client('backoffice-product', config)
+            client = await MongoClientFactory.create_client('backoffice-products', config)
 
             return MongoBackofficeProductRepository(client)
 
@@ -79,3 +81,8 @@ class BackofficeModule(Module):
             return BackofficeProductCreator(repository, event_bus, logger)
 
         return __get_backoffice_product_creator
+
+
+backoffice_container = Injector(
+    [mongoconfig, eventbus, logger, BackofficeModule()], auto_bind=True,
+)
