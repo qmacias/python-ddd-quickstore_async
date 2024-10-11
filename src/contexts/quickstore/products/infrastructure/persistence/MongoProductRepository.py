@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from src.contexts.shared.infrastructure.persistence.MongoRepository import MongoRepository
@@ -25,3 +27,13 @@ class MongoProductRepository(MongoRepository, ProductRepository):
 
     async def save(self, product: Product) -> None:
         await self.persist(product.id.value, product)
+
+    async def search_all(self) -> Sequence[Product]:
+        documents = await self._collection.find({}).to_list(None)
+
+        return [
+            Product.from_primitives({
+                'id': doc.get('_id'), 'name': doc.get('name'),
+            })
+            for doc in documents
+        ]
