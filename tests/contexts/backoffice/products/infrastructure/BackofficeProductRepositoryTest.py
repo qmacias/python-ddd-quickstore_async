@@ -12,7 +12,11 @@ from tests.contexts.backoffice.products.domain.BackofficeProductMother import Ba
 
 class BackofficeProductRepositoryTest(IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        self.__arranger = container.get(EnvironmentArranger)
+        arranger_provider = container.get(
+            Callable[[], Awaitable[EnvironmentArranger]],
+        )
+
+        self.__arranger = await arranger_provider()
 
         await self.__arranger.arrange()
 

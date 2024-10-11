@@ -8,12 +8,12 @@ from tests.contexts.shared.infrastructure.arranger.EnvironmentArranger import En
 class MongoEnvironmentArranger(EnvironmentArranger):
     def __init__(
             self,
-            mongodb_uri: str,
-            database: str
+            client: AsyncIOMotorClient,
+            database: str,
     ) -> None:
         super().__init__()
 
-        self.__client = AsyncIOMotorClient(mongodb_uri)
+        self.__client = client
         self.__database = self.__client.get_database(database)
 
     async def arrange(self) -> None:

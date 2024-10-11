@@ -22,10 +22,13 @@ from tests.contexts.shared.infrastructure.arranger.MongoEnvironmentArranger impo
 class BackofficeModule(Module):
     @singleton
     @provider
-    def backoffice_environment_arranger(self, config: MongoConfig) -> EnvironmentArranger:
-        arranger = MongoEnvironmentArranger(config.uri, 'backoffice')
+    def backoffice_environment_arranger(self, config: MongoConfig) -> Callable[[], Awaitable[EnvironmentArranger]]:
+        async def __get_environment_arranger() -> EnvironmentArranger:
+            client = await MongoClientFactory.create_client('backoffice', config)
 
-        return arranger
+            return MongoEnvironmentArranger(client, 'backoffice')
+
+        return __get_environment_arranger
 
     @singleton
     @provider
