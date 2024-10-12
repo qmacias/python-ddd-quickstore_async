@@ -1,12 +1,9 @@
-from injector import Module, singleton, provider, Injector
+from injector import Module, singleton, provider
 from typing import Awaitable, Callable
 from logging import Logger
 
 from src.contexts.shared.infrastructure.persistence.MongoClientFactory import MongoClientFactory
 from src.contexts.shared.infrastructure.persistence.MongoConfig import MongoConfig
-from src.contexts.shared.infrastructure.modules.MongoConfigModule import mongoconfig
-from src.contexts.shared.infrastructure.modules.EventBusModule import eventbus
-from src.contexts.shared.infrastructure.modules.LoggerModule import logger
 from src.contexts.shared.domain.EventBus import EventBus
 
 from src.contexts.backoffice.users.infrastructure.persistence.MongoBackofficeUserRepository import MongoBackofficeUserRepository
@@ -17,21 +14,8 @@ from src.contexts.backoffice.products.infrastructure.persistence.MongoBackoffice
 from src.contexts.backoffice.products.application.BackofficeProductCreator import BackofficeProductCreator
 from src.contexts.backoffice.products.domain.BackofficeProductRepository import BackofficeProductRepository
 
-from tests.contexts.shared.infrastructure.arranger.EnvironmentArranger import EnvironmentArranger
-from tests.contexts.shared.infrastructure.arranger.MongoEnvironmentArranger import MongoEnvironmentArranger
-
 
 class BackofficeModule(Module):
-    @singleton
-    @provider
-    def backoffice_environment_arranger(self, config: MongoConfig) -> Callable[[], Awaitable[EnvironmentArranger]]:
-        async def __get_backoffice_environment_arranger() -> EnvironmentArranger:
-            client = await MongoClientFactory.create_client('backoffice', config)
-
-            return MongoEnvironmentArranger(client, 'backoffice')
-
-        return __get_backoffice_environment_arranger
-
     @singleton
     @provider
     def backoffice_user_repository(self, config: MongoConfig) -> Callable[[], Awaitable[BackofficeUserRepository]]:
@@ -81,8 +65,3 @@ class BackofficeModule(Module):
             return BackofficeProductCreator(repository, event_bus, logger)
 
         return __get_backoffice_product_creator
-
-
-backoffice_container = Injector(
-    [mongoconfig, eventbus, logger, BackofficeModule()], auto_bind=True,
-)

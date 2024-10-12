@@ -1,12 +1,13 @@
+from typing import Callable, Awaitable
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.apps.backoffice.backend.deps import backoffice_container
+from src.apps.container import container, config_eventbus
 from src.apps.backoffice.backend.routers.users_router import users_router
 from src.apps.backoffice.backend.routers.products_router import products_router
 from src.apps.backoffice.backend.routers.statuscheck_router import statuscheck_router
 
-from src.contexts.shared.infrastructure.modules.EventBusModule import config_eventbus
 from src.contexts.shared.domain.EventSubscriber import EventSubscriber
 from src.contexts.shared.domain.EventBus import EventBus
 
@@ -27,9 +28,14 @@ backoffice_backend_app.include_router(statuscheck_router)
 
 @backoffice_backend_app.on_event('startup')
 async def startup_event():
-    print('<< BACKOFFICE STARTUP >>')
+    eventbus = container.get(EventBus)
 
-    # config_eventbus(
-    #     eventbus=backoffice_container.get(EventBus),
-    #     subscribers=backoffice_container.get(list[EventSubscriber]),
-    # )
+    subscribers_provider = container.get(
+        Callable[[], Awaitable[list[EventSubscriber]]]
+    )
+
+    subscribers = await subscribers_provider()
+
+    config_eventbus(
+        eventbus=eventbus, subscribers=subscribers,
+    )

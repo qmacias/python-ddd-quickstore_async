@@ -1,7 +1,7 @@
 from typing import Callable, Awaitable
 from unittest import IsolatedAsyncioTestCase
 
-from src.apps.quickstore.backend.deps import container
+from src.apps.container import container
 
 from src.contexts.quickstore.products.domain.ProductRepository import ProductRepository
 

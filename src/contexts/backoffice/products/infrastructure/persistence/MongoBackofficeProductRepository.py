@@ -7,7 +7,7 @@ from src.contexts.backoffice.products.domain.BackofficeProductRepository import 
 
 
 class MongoBackofficeProductRepository(MongoRepository, BackofficeProductRepository):
-    __DATABASE_NAME = 'backoffice'
+    __DATABASE_NAME = 'quickstore-backend-dev'
     __COLLECTION_NAME = 'backoffice_products'
 
     def __init__(

@@ -7,7 +7,7 @@ from src.contexts.backoffice.users.domain.BackofficeUserRepository import Backof
 
 
 class MongoBackofficeUserRepository(MongoRepository, BackofficeUserRepository):
-    __DATABASE_NAME = 'backoffice'
+    __DATABASE_NAME = 'quickstore-backend-dev'
     __COLLECTION_NAME = 'backoffice_users'
 
     def __init__(

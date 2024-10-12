@@ -9,7 +9,7 @@ from src.contexts.quickstore.products.domain.ProductRepository import ProductRep
 
 
 class MongoProductRepository(MongoRepository, ProductRepository):
-    __DATABASE_NAME = 'quickstore'
+    __DATABASE_NAME = 'quickstore-backend-dev'
     __COLLECTION_NAME = 'products'
 
     def __init__(

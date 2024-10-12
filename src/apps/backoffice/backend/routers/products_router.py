@@ -5,7 +5,7 @@ from typing import Dict, Any, Callable, Awaitable
 from fastapi import APIRouter, Request, status
 from fastapi.responses import Response, PlainTextResponse
 
-from src.apps.backoffice.backend.deps import backoffice_container
+from src.apps.container import container
 
 from src.contexts.backoffice.products.application.BackofficeProductCreator import BackofficeProductCreator
 from src.contexts.shared.domain.InvalidArgumentError import InvalidArgumentError
@@ -18,7 +18,7 @@ async def create_product(product_id: str, request: Request) -> Response:
     try:
         body: Dict[str, Any] = await request.json()
 
-        creator_provider = backoffice_container.get(
+        creator_provider = container.get(
             Callable[[], Awaitable[BackofficeProductCreator]],
         )
 

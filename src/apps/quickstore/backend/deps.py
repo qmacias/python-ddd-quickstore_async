@@ -1,31 +1,17 @@
-from injector import Module, singleton, provider, Injector
+from injector import Module, singleton, provider, multiprovider, inject
 from typing import Awaitable, Callable
 
 from src.contexts.shared.infrastructure.persistence.MongoClientFactory import MongoClientFactory
 from src.contexts.shared.infrastructure.persistence.MongoConfig import MongoConfig
-from src.contexts.shared.infrastructure.modules.MongoConfigModule import mongoconfig
-from src.contexts.shared.infrastructure.modules.EventBusModule import eventbus
-from src.contexts.shared.infrastructure.modules.LoggerModule import logger
+from src.contexts.shared.domain.EventSubscriber import EventSubscriber
 
 from src.contexts.quickstore.products.infrastructure.persistence.MongoProductRepository import MongoProductRepository
+from src.contexts.quickstore.products.application.create.CreateProductOnBackofficeProductCreated import CreateProductOnBackofficeProductCreated
 from src.contexts.quickstore.products.application.create.ProductCreator import ProductCreator
 from src.contexts.quickstore.products.domain.ProductRepository import ProductRepository
 
-from tests.contexts.shared.infrastructure.arranger.EnvironmentArranger import EnvironmentArranger
-from tests.contexts.shared.infrastructure.arranger.MongoEnvironmentArranger import MongoEnvironmentArranger
-
 
 class QuickstoreModule(Module):
-    @singleton
-    @provider
-    def environment_arranger(self, config: MongoConfig) -> Callable[[], Awaitable[EnvironmentArranger]]:
-        async def __get_environment_arranger() -> EnvironmentArranger:
-            client = await MongoClientFactory.create_client('quickstore', config)
-
-            return MongoEnvironmentArranger(client, 'quickstore')
-
-        return __get_environment_arranger
-
     @singleton
     @provider
     def product_repository(self, config: MongoConfig) -> Callable[[], Awaitable[ProductRepository]]:
@@ -50,6 +36,19 @@ class QuickstoreModule(Module):
         return __get_product_creator
 
 
-container = Injector(
-    [mongoconfig, eventbus, logger, QuickstoreModule()], auto_bind=True,
-)
+class QuickstoreEventSubscribersModule(Module):
+    @singleton
+    @multiprovider
+    @inject
+    def event_subscribers(
+            self,
+            product_creator_provider: Callable[[], Awaitable[ProductCreator]],
+    ) -> Callable[[], Awaitable[list[EventSubscriber]]]:
+        async def __get_event_subscribers() -> list[EventSubscriber]:
+            product_creator = await product_creator_provider()
+
+            return [
+                CreateProductOnBackofficeProductCreated(product_creator),
+            ]
+
+        return __get_event_subscribers
