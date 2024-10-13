@@ -10,6 +10,7 @@ from src.contexts.shared.domain.EventBus import EventBus
 
 from tests.contexts.shared.domain.MotherCreator import MotherCreator
 from tests.contexts.shared.domain.users.UserNameProvider import UserNameProvider
+from tests.contexts.shared.domain.users.UserEmailProvider import UserEmailProvider
 from tests.contexts.backoffice.users.domain.BackofficeUserMother import BackofficeUserMother
 from tests.contexts.backoffice.users.domain.BackofficeUserCreatedMother import BackofficeUserCreatedMother
 
@@ -17,6 +18,7 @@ from tests.contexts.backoffice.users.domain.BackofficeUserCreatedMother import B
 class BackofficeUserCreatorTest(IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         MotherCreator.add_provider(UserNameProvider)
+        MotherCreator.add_provider(UserEmailProvider)
 
         self.__eventbus = AsyncMock(spec=EventBus)
         self.__repository = AsyncMock(spec=BackofficeUserRepository)
@@ -29,11 +31,12 @@ class BackofficeUserCreatorTest(IsolatedAsyncioTestCase):
         user = BackofficeUserMother.random()
 
         domain_events = [
-            BackofficeUserCreatedMother
-            .create(user.id.value, user.name.value)
+            BackofficeUserCreatedMother.create(
+                user.id.value, user.name.value, user.email.value,
+            )
         ]
 
-        await self.__creator(user.id.value, user.name.value)
+        await self.__creator(user.id.value, user.name.value, user.email.value)
 
         self.__repository.save.assert_called_once_with(user)
         self.__eventbus.publish.assert_called_once_with(domain_events)
@@ -42,7 +45,7 @@ class BackofficeUserCreatorTest(IsolatedAsyncioTestCase):
         with self.assertRaises(InvalidArgumentError):
             user = BackofficeUserMother.with_bad_id()
 
-            await self.__creator(user.id.value, user.name.value)
+            await self.__creator(user.id.value, user.name.value, user.email.value)
 
             self.__repository.save.assert_not_called()
             self.__eventbus.publish.assert_not_called()
@@ -51,7 +54,16 @@ class BackofficeUserCreatorTest(IsolatedAsyncioTestCase):
         with self.assertRaises(InvalidArgumentError):
             user = BackofficeUserMother.with_bad_name()
 
-            await self.__creator(user.id.value, user.name.value)
+            await self.__creator(user.id.value, user.name.value, user.email.value)
+
+            self.__repository.save.assert_not_called()
+            self.__eventbus.publish.assert_not_called()
+
+    async def test_should_not_create_an_invalid_backoffice_user_with_bad_email(self) -> None:
+        with self.assertRaises(InvalidArgumentError):
+            user = BackofficeUserMother.with_bad_email()
+
+            await self.__creator(user.id.value, user.name.value, user.email.value)
 
             self.__repository.save.assert_not_called()
             self.__eventbus.publish.assert_not_called()

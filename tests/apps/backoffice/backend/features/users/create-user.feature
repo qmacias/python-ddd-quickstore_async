@@ -7,7 +7,8 @@ Feature: Create a new user
     When I send a PUT request to "/users/5cbd55ab-3e3d-4b3b-b86d-cec4fa4917b7" with body
     """
     {
-      "name": "John Doe"
+      "name": "John Doe",
+      "email": "example@example.com"
     }
     """
     Then the response status code should be 201
@@ -19,7 +20,8 @@ Feature: Create a new user
     When I send a PUT request to "/users/5cbd55ab-3e3d-4b3b-b86d-cec4fa4917b7." with body
     """
     {
-      "name": "John Doe"
+      "name": "John Doe",
+      "email": "example@example.com"
     }
     """
     Then the response status code should be 422
@@ -31,10 +33,24 @@ Feature: Create a new user
     When I send a PUT request to "/users/5cbd55ab-3e3d-4b3b-b86d-cec4fa4917b7" with body
     """
     {
-      "name": "John.Doe"
+      "name": "John.Doe",
+      "email": "example@example.com"
     }
     """
     Then the response status code should be 422
     And the response content type header should be "text/plain"
     And the response content should be "Invalid name: 'John.Doe'"
+    And the response location header should be "/users/5cbd55ab-3e3d-4b3b-b86d-cec4fa4917b7"
+
+  Scenario: An invalid non-existing user [with bad email]
+    When I send a PUT request to "/users/5cbd55ab-3e3d-4b3b-b86d-cec4fa4917b7" with body
+    """
+    {
+      "name": "John Doe",
+      "email": "example@example"
+    }
+    """
+    Then the response status code should be 422
+    And the response content type header should be "text/plain"
+    And the response content should be "Invalid email: 'example@example'"
     And the response location header should be "/users/5cbd55ab-3e3d-4b3b-b86d-cec4fa4917b7"

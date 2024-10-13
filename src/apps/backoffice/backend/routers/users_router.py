@@ -24,7 +24,7 @@ async def create_user(user_id: str, request: Request) -> Response:
 
         creator = await creator_provider()
 
-        await creator(user_id, body.get('name'))
+        await creator(user_id, body.get('name'), body.get('email'))
 
         return PlainTextResponse(None, status.HTTP_201_CREATED, {'Location': request.url.path})
     except InvalidArgumentError as e:

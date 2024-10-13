@@ -12,8 +12,8 @@ class BackofficeUserCreator:
         self.__eventbus = event_bus
         self.__logger = logger
 
-    async def __call__(self, id: str, name: str) -> None:
-        user = BackofficeUser.create(id, name)
+    async def __call__(self, id: str, name: str, email: str) -> None:
+        user = BackofficeUser.create(id, name, email)
 
         await self.__backoffice_repository.save(user)
 

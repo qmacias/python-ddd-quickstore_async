@@ -4,6 +4,6 @@ from src.contexts.backoffice.users.domain.BackofficeUserCreated import Backoffic
 class BackofficeUserCreatedMother:
     @staticmethod
     def create(
-            aggregate_id: str, name: str,
+            aggregate_id: str, name: str, email: str,
     ) -> 'BackofficeUserCreated':
-        return BackofficeUserCreated(aggregate_id, name)
+        return BackofficeUserCreated(aggregate_id, name, email)
