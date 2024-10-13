@@ -1,9 +1,17 @@
 import uvicorn
 
+from typing import NamedTuple
+
 from settings import settings
 
 
+class QuickstoreConfig(NamedTuple):
+    app: str = settings.QUICKSTORE_BACKEND_APP
+    host: str = settings.QUICKSTORE_BACKEND_APP_HOST
+    port: int = settings.QUICKSTORE_BACKEND_APP_PORT
+
+
 def run_quickstore_backend() -> None:
-    uvicorn.run(app=settings.QUICKSTORE_BACKEND_APP,
-                host=settings.QUICKSTORE_BACKEND_APP_HOST,
-                port=settings.QUICKSTORE_BACKEND_APP_PORT, reload=True)
+    config = QuickstoreConfig()
+
+    uvicorn.run(**config._asdict(), reload=True)
