@@ -1,5 +1,5 @@
 Feature: Create a new user
-  As a user with admin permissions
+  As a user
   I want to create a non-existing user
   In order to have more users on the platform
 

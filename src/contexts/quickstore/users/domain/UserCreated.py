@@ -5,8 +5,8 @@ from src.contexts.shared.domain.DomainEvent import DomainEvent
 
 
 @final
-class BackofficeUserCreated(DomainEvent):
-    EVENT_TYPE = 'backoffice.user.created'
+class UserCreated(DomainEvent):
+    EVENT_TYPE = 'user.created'
 
     def __init__(
             self,

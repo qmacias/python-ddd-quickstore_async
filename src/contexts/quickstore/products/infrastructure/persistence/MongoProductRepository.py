@@ -33,7 +33,8 @@ class MongoProductRepository(MongoRepository, ProductRepository):
 
         return [
             Product.from_primitives({
-                'id': doc.get('_id'), 'name': doc.get('name'),
+                'id': doc.get('_id'),
+                'name': doc.get('name'),
             })
             for doc in documents
         ]

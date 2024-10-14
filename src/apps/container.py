@@ -1,12 +1,17 @@
 from typing import Callable, Awaitable
 
-from injector import Module, singleton, provider, Injector
 from logging import Logger, getLogger, INFO, Formatter, StreamHandler
+from injector import Module, singleton, provider, Injector, multiprovider, inject
 
 from settings import settings
-from src.apps.backoffice.backend.deps import BackofficeModule
 
-from src.apps.quickstore.backend.deps import QuickstoreModule, QuickstoreEventSubscribersModule
+from src.apps.backoffice.backend.deps import BackofficeModule
+from src.contexts.backoffice.users.application.create.BackofficeUserCreator import BackofficeUserCreator
+from src.contexts.backoffice.users.application.create.CreateBackofficeUserOnUserCreated import CreateBackofficeUserOnUserCreated
+
+from src.apps.quickstore.backend.deps import QuickstoreModule
+from src.contexts.quickstore.products.application.create.ProductCreator import ProductCreator
+from src.contexts.quickstore.products.application.create.CreateProductOnBackofficeProductCreated import CreateProductOnBackofficeProductCreated
 
 from tests.contexts.shared.infrastructure.arranger.MongoEnvironmentArranger import MongoEnvironmentArranger
 from tests.contexts.shared.infrastructure.arranger.EnvironmentArranger import EnvironmentArranger
@@ -73,12 +78,35 @@ class EventBusModule(Module):
 
 
 def config_eventbus(
-        eventbus: EventBus, subscribers: list[EventSubscriber],
+        eventbus: EventBus,
+        subscribers: list[EventSubscriber],
 ) -> None:
     eventbus.add_subscribers(subscribers)
 
 
+class EventSubscribersModule(Module):
+    @singleton
+    @multiprovider
+    @inject
+    def event_subscribers(
+            self,
+            backoffice_user_creator_provider: Callable[[], Awaitable[BackofficeUserCreator]],
+            quickstore_product_creator_provider: Callable[[], Awaitable[ProductCreator]],
+    ) -> Callable[[], Awaitable[list[EventSubscriber]]]:
+        async def __get_event_subscribers() -> list[EventSubscriber]:
+            backoffice_user_creator = await backoffice_user_creator_provider()
+            quickstore_product_creator = await quickstore_product_creator_provider()
+
+            return [
+                CreateBackofficeUserOnUserCreated(backoffice_user_creator),
+                CreateProductOnBackofficeProductCreated(quickstore_product_creator),
+            ]
+
+        return __get_event_subscribers
+
+
 container = Injector([
-    LoggerModule(), EventBusModule(), MongoConfigModule(), ArrangerModule(),
-    BackofficeModule(), QuickstoreModule(), QuickstoreEventSubscribersModule()], auto_bind=True,
+    LoggerModule(), EventBusModule(),
+    MongoConfigModule(), ArrangerModule(),
+    BackofficeModule(), QuickstoreModule(), EventSubscribersModule()], auto_bind=True,
 )

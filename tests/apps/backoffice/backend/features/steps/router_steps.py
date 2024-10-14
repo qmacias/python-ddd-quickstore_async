@@ -15,11 +15,6 @@ def step_impl(context, endpoint):
     context.response = context.client.put(endpoint, json=context.request_body)
 
 
-@when('I send a DELETE request to "{endpoint}"')
-def step_impl(context, endpoint):
-    context.response = context.client.delete(endpoint)
-
-
 @then('the response status code should be {status_code:d}')
 def step_impl(context, status_code):
     assert context.response.status_code == status_code

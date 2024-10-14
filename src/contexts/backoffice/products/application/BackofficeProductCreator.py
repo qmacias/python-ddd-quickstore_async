@@ -7,9 +7,9 @@ from src.contexts.backoffice.products.domain.BackofficeProductRepository import 
 
 
 class BackofficeProductCreator:
-    def __init__(self, backoffice_repository: BackofficeProductRepository, event_bus: EventBus, logger: Logger) -> None:
+    def __init__(self, backoffice_repository: BackofficeProductRepository, eventbus: EventBus, logger: Logger) -> None:
         self.__backoffice_repository = backoffice_repository
-        self.__eventbus = event_bus
+        self.__eventbus = eventbus
         self.__logger = logger
 
     async def __call__(self, id: str, name: str) -> None:

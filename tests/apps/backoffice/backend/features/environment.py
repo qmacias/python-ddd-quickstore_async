@@ -6,6 +6,7 @@ from behave.api.async_step import async_run_until_complete
 from fastapi.testclient import TestClient
 
 from src.apps.container import container
+
 from src.apps.backoffice.backend.app import backoffice_backend_app
 
 from tests.contexts.shared.infrastructure.arranger.EnvironmentArranger import EnvironmentArranger

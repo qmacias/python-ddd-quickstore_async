@@ -5,7 +5,6 @@ from src.contexts.shared.domain.AggregateRoot import AggregateRoot
 from src.contexts.backoffice.users.domain.BackofficeUserId import BackofficeUserId
 from src.contexts.backoffice.users.domain.BackofficeUserName import BackofficeUserName
 from src.contexts.backoffice.users.domain.BackofficeUserEmail import BackofficeUserEmail
-from src.contexts.backoffice.users.domain.BackofficeUserCreated import BackofficeUserCreated
 
 
 @final
@@ -33,12 +32,6 @@ class BackofficeUser(AggregateRoot):
             BackofficeUserId(id),
             BackofficeUserName(name),
             BackofficeUserEmail(email),
-        )
-
-        user.record(
-            BackofficeUserCreated(
-                user.id.value, user.name.value, user.email.value,
-            )
         )
 
         return user

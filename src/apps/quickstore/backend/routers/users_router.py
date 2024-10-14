@@ -7,7 +7,7 @@ from fastapi.responses import Response, PlainTextResponse
 
 from src.apps.container import container
 
-from src.contexts.backoffice.users.application.BackofficeUserCreator import BackofficeUserCreator
+from src.contexts.quickstore.users.application.UserCreator import UserCreator
 from src.contexts.shared.domain.InvalidArgumentError import InvalidArgumentError
 
 users_router = APIRouter()
@@ -19,7 +19,7 @@ async def create_user(user_id: str, request: Request) -> Response:
         body: Dict[str, Any] = await request.json()
 
         creator_provider = container.get(
-            Callable[[], Awaitable[BackofficeUserCreator]],
+            Callable[[], Awaitable[UserCreator]],
         )
 
         creator = await creator_provider()

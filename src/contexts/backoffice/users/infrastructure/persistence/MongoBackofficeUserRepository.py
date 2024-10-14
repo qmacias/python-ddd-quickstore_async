@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from src.contexts.shared.infrastructure.persistence.MongoRepository import MongoRepository
@@ -25,3 +27,15 @@ class MongoBackofficeUserRepository(MongoRepository, BackofficeUserRepository):
 
     async def save(self, user: BackofficeUser) -> None:
         await self.persist(user.id.value, user)
+
+    async def search_all(self) -> Sequence[BackofficeUser]:
+        documents = await self._collection.find({}).to_list(None)
+
+        return [
+            BackofficeUser.from_primitives({
+                'id': doc.get('_id'),
+                'name': doc.get('name'),
+                'email': doc.get('email'),
+            })
+            for doc in documents
+        ]

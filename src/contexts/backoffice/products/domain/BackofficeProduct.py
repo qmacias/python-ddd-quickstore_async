@@ -55,10 +55,6 @@ class BackofficeProduct(AggregateRoot):
     def name(self) -> BackofficeProductName:
         return self._name
 
-    @name.setter
-    def name(self, name: BackofficeProductName) -> None:
-        self._name = name  # <-- For duplicator only!
-
     def to_primitives(self) -> Dict[str, Any]:
         return {
             'id': self._id.value,

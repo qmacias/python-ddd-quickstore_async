@@ -3,16 +3,16 @@ from unittest import IsolatedAsyncioTestCase
 
 from src.apps.container import container
 
-from src.contexts.backoffice.users.domain.BackofficeUserRepository import BackofficeUserRepository
+from src.contexts.quickstore.users.domain.UserRepository import UserRepository
 
 from tests.contexts.shared.infrastructure.arranger.EnvironmentArranger import EnvironmentArranger
 from tests.contexts.shared.domain.MotherCreator import MotherCreator
 from tests.contexts.shared.domain.users.UserNameProvider import UserNameProvider
 from tests.contexts.shared.domain.users.UserEmailProvider import UserEmailProvider
-from tests.contexts.backoffice.users.domain.BackofficeUserMother import BackofficeUserMother
+from tests.contexts.quickstore.users.domain.UserMother import UserMother
 
 
-class BackofficeUserRepositoryTest(IsolatedAsyncioTestCase):
+class UserRepositoryTest(IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         arranger_provider = container.get(
             Callable[[], Awaitable[EnvironmentArranger]],
@@ -22,25 +22,19 @@ class BackofficeUserRepositoryTest(IsolatedAsyncioTestCase):
 
         await self.__arranger.arrange()
 
-    async def test_should_be_able_to_persist_the_same_backoffice_user_twice(self) -> None:
+    async def test_should_save_a_user(self) -> None:
         MotherCreator.add_provider(UserNameProvider)
         MotherCreator.add_provider(UserEmailProvider)
 
-        user = BackofficeUserMother.random()
+        user = UserMother.random()
 
         repository_provider = container.get(
-            Callable[[], Awaitable[BackofficeUserRepository]],
+            Callable[[], Awaitable[UserRepository]],
         )
 
         repository = await repository_provider()
 
         await repository.save(user)
-        await repository.save(user)
-
-        persisted_users = await repository.search_all()
-
-        self.assertEqual(len(persisted_users), 1)
-        self.assertEqual(persisted_users, [user])
 
     async def asyncTearDown(self):
         await self.__arranger.arrange()
