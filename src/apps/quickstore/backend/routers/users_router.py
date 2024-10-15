@@ -1,8 +1,8 @@
 import json
 
-from typing import Dict, Any, Callable, Awaitable
+from typing import Annotated, Dict, Any, Callable, Awaitable
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Body, Request, status
 from fastapi.responses import Response, PlainTextResponse
 
 from src.apps.container import container
@@ -14,10 +14,10 @@ users_router = APIRouter()
 
 
 @users_router.put('/users/{user_id}')
-async def create_user(user_id: str, request: Request) -> Response:
+async def create_user(
+        user_id: str, body: Annotated[Dict[str, Any], Body()], request: Request,
+) -> Response:
     try:
-        body: Dict[str, Any] = await request.json()
-
         creator_provider = container.get(
             Callable[[], Awaitable[UserCreator]],
         )

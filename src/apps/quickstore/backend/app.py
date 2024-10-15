@@ -35,8 +35,6 @@ async def startup_event():
 
     subscribers = await subscribers_provider()
 
-    print(subscribers)
-
     config_eventbus(
         eventbus=eventbus, subscribers=subscribers,
     )
