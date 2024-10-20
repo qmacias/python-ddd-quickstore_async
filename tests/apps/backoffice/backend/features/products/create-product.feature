@@ -7,7 +7,8 @@ Feature: Create a new product
     When I send a PUT request to "/products/a30a0af2-79ad-498f-bafa-51e4910ebeec" with body
     """
     {
-      "name": "Wireless Mouse"
+      "name": "Wireless Mouse",
+      "price": 2499
     }
     """
     Then the response status code should be 201
@@ -19,7 +20,8 @@ Feature: Create a new product
     When I send a PUT request to "/products/a30a0af2-79ad-498f-bafa-51e4910ebeec." with body
     """
     {
-      "name": "Wireless Mouse"
+      "name": "Wireless Mouse",
+      "price": 2499
     }
     """
     Then the response status code should be 422
@@ -31,10 +33,24 @@ Feature: Create a new product
     When I send a PUT request to "/products/a30a0af2-79ad-498f-bafa-51e4910ebeec" with body
     """
     {
-      "name": "@Wireless Mouse"
+      "name": "@Wireless Mouse",
+      "price": 2499
     }
     """
     Then the response status code should be 422
     And the response content type header should be "text/plain"
     And the response content should be "Invalid name: '@Wireless Mouse'"
+    And the response location header should be "/products/a30a0af2-79ad-498f-bafa-51e4910ebeec"
+
+  Scenario: An invalid non-existing product [with bad price]
+    When I send a PUT request to "/products/a30a0af2-79ad-498f-bafa-51e4910ebeec" with body
+    """
+    {
+      "name": "Wireless Mouse",
+      "price": -1
+    }
+    """
+    Then the response status code should be 422
+    And the response content type header should be "text/plain"
+    And the response content should be "Invalid number: -1"
     And the response location header should be "/products/a30a0af2-79ad-498f-bafa-51e4910ebeec"

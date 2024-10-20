@@ -4,6 +4,7 @@ from src.contexts.shared.domain.AggregateRoot import AggregateRoot
 
 from src.contexts.backoffice.products.domain.BackofficeProductId import BackofficeProductId
 from src.contexts.backoffice.products.domain.BackofficeProductName import BackofficeProductName
+from src.contexts.backoffice.products.domain.BackofficeProductPrice import BackofficeProductPrice
 from src.contexts.backoffice.products.domain.BackofficeProductCreated import BackofficeProductCreated
 
 
@@ -13,26 +14,30 @@ class BackofficeProduct(AggregateRoot):
             self,
             id: BackofficeProductId,
             name: BackofficeProductName,
+            price: BackofficeProductPrice,
     ) -> None:
         super().__init__()
 
         self._id = id
         self._name = name
+        self._price = price
 
     @classmethod
     def create(
             cls,
             id: str,
             name: str,
+            price: int,
     ) -> 'BackofficeProduct':
         product = cls(
             BackofficeProductId(id),
             BackofficeProductName(name),
+            BackofficeProductPrice(price),
         )
 
         product.record(
             BackofficeProductCreated(
-                product.id.value, product.name.value,
+                product.id.value, product.name.value, product.price.value,
             )
         )
 
@@ -45,6 +50,7 @@ class BackofficeProduct(AggregateRoot):
         return cls(
             BackofficeProductId(plain_data.get('id')),
             BackofficeProductName(plain_data.get('name')),
+            BackofficeProductPrice(plain_data.get('price')),
         )
 
     @property
@@ -55,10 +61,15 @@ class BackofficeProduct(AggregateRoot):
     def name(self) -> BackofficeProductName:
         return self._name
 
+    @property
+    def price(self) -> BackofficeProductPrice:
+        return self._price
+
     def to_primitives(self) -> Dict[str, Any]:
         return {
             'id': self._id.value,
             'name': self._name.value,
+            'price': self._price.value,
         }
 
     def __eq__(self, other) -> bool:
@@ -70,6 +81,7 @@ class BackofficeProduct(AggregateRoot):
         attrs: dict = {
             'id': self._id,
             'name': self._name,
+            'price': self._price,
         }
 
         attrs_str: str = ', '.join(

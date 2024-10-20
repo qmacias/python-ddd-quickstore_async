@@ -20,4 +20,4 @@ class Number(ValueObject[int]):
 
     def __ensure_valid_number(self) -> None:
         if self._value < 0:
-            raise InvalidArgumentError(f'Invalid number: {self._value!r}')
+            raise InvalidArgumentError(f'Invalid number: {self._value}')

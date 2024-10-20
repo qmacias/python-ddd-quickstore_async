@@ -12,8 +12,8 @@ class BackofficeProductCreator:
         self.__eventbus = eventbus
         self.__logger = logger
 
-    async def __call__(self, id: str, name: str) -> None:
-        product = BackofficeProduct.create(id, name)
+    async def __call__(self, id: str, name: str, price: int) -> None:
+        product = BackofficeProduct.create(id, name, price)
 
         await self.__backoffice_repository.save(product)
 

@@ -4,6 +4,6 @@ from src.contexts.backoffice.products.domain.BackofficeProductCreated import Bac
 class BackofficeProductCreatedMother:
     @staticmethod
     def create(
-            aggregate_id: str, name: str,
+            aggregate_id: str, name: str, price: int,
     ) -> 'BackofficeProductCreated':
-        return BackofficeProductCreated(aggregate_id, name)
+        return BackofficeProductCreated(aggregate_id, name, price)

@@ -24,7 +24,7 @@ async def create_product(
 
         creator = await creator_provider()
 
-        await creator(product_id, body.get('name'))
+        await creator(product_id, body.get('name'), body.get('price'))
 
         return PlainTextResponse(None, status.HTTP_201_CREATED, {'Location': request.url.path})
     except InvalidArgumentError as e:

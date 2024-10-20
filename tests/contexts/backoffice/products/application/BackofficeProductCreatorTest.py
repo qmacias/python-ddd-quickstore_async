@@ -30,10 +30,10 @@ class BackofficeProductCreatorTest(IsolatedAsyncioTestCase):
 
         domain_events = [
             BackofficeProductCreatedMother
-            .create(product.id.value, product.name.value)
+            .create(product.id.value, product.name.value, product.price.value),
         ]
 
-        await self.__creator(product.id.value, product.name.value)
+        await self.__creator(product.id.value, product.name.value, product.price.value)
 
         self.__repository.save.assert_called_once_with(product)
         self.__eventbus.publish.assert_called_once_with(domain_events)
@@ -42,7 +42,7 @@ class BackofficeProductCreatorTest(IsolatedAsyncioTestCase):
         with self.assertRaises(InvalidArgumentError):
             product = BackofficeProductMother.with_bad_id()
 
-            await self.__creator(product.id.value, product.name.value)
+            await self.__creator(product.id.value, product.name.value, product.price.value)
 
             self.__repository.save.assert_not_called()
             self.__eventbus.publish.assert_not_called()
@@ -51,7 +51,16 @@ class BackofficeProductCreatorTest(IsolatedAsyncioTestCase):
         with self.assertRaises(InvalidArgumentError):
             product = BackofficeProductMother.with_bad_name()
 
-            await self.__creator(product.id.value, product.name.value)
+            await self.__creator(product.id.value, product.name.value, product.price.value)
+
+            self.__repository.save.assert_not_called()
+            self.__eventbus.publish.assert_not_called()
+
+    async def test_should_not_create_an_invalid_backoffice_product_with_bad_price(self) -> None:
+        with self.assertRaises(InvalidArgumentError):
+            product = BackofficeProductMother.with_bad_price()
+
+            await self.__creator(product.id.value, product.name.value, product.price.value)
 
             self.__repository.save.assert_not_called()
             self.__eventbus.publish.assert_not_called()

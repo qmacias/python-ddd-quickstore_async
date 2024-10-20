@@ -22,6 +22,8 @@ def step_impl(context, status_code):
 
 @then('the response content should be {content}')
 def step_impl(context, content):
+    print(context.response.content)
+    print(content.encode())
     assert context.response.content == content.encode()
 
 
