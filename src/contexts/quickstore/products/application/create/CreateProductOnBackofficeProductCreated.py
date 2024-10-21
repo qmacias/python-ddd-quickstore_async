@@ -18,4 +18,4 @@ class CreateProductOnBackofficeProductCreated(EventSubscriber):
 
     async def on(self, event: BackofficeProductCreated) -> None:
         print(event.to_primitives())
-        await self.__creator(event.aggregate_id, event.name)
+        await self.__creator(event.aggregate_id, event.name, event.price)

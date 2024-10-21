@@ -2,6 +2,7 @@ from src.contexts.quickstore.products.domain.Product import Product
 
 from tests.contexts.quickstore.products.domain.ProductIdMother import ProductIdMother
 from tests.contexts.quickstore.products.domain.ProductNameMother import ProductNameMother
+from tests.contexts.quickstore.products.domain.ProductPriceMother import ProductPriceMother
 
 
 class ProductMother:
@@ -9,10 +10,12 @@ class ProductMother:
     def create(
             id: str,
             name: str,
+            price: int,
     ) -> 'Product':
         return Product.create(
             ProductIdMother.create(id).value,
             ProductNameMother.create(name).value,
+            ProductPriceMother.create(price).value,
         )
 
     @classmethod
@@ -20,4 +23,5 @@ class ProductMother:
         return cls.create(
             ProductIdMother.random().value,
             ProductNameMother.random().value,
+            ProductPriceMother.random().value,
         )

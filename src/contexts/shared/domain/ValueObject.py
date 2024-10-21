@@ -27,6 +27,9 @@ class ValueObject(Generic[T], ABC):
             return self._value == other.value
         return False
 
+    def __int__(self) -> int:
+        return int(self._value)
+
     def __str__(self) -> str:
         return str(self._value)
 

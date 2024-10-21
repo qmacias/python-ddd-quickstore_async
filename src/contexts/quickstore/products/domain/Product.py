@@ -4,6 +4,7 @@ from src.contexts.shared.domain.AggregateRoot import AggregateRoot
 
 from src.contexts.quickstore.products.domain.ProductId import ProductId
 from src.contexts.quickstore.products.domain.ProductName import ProductName
+from src.contexts.quickstore.products.domain.ProductPrice import ProductPrice
 
 
 @final
@@ -12,21 +13,25 @@ class Product(AggregateRoot):
             self,
             id: ProductId,
             name: ProductName,
+            price: ProductPrice,
     ) -> None:
         super().__init__()
 
         self._id = id
         self._name = name
+        self._price = price
 
     @classmethod
     def create(
             cls,
             id: str,
             name: str,
+            price: int,
     ) -> 'Product':
         product = cls(
             ProductId(id),
             ProductName(name),
+            ProductPrice(price),
         )
 
         return product
@@ -38,6 +43,7 @@ class Product(AggregateRoot):
         return cls(
             ProductId(plain_data.get('id')),
             ProductName(plain_data.get('name')),
+            ProductPrice(plain_data.get('price')),
         )
 
     @property
@@ -48,10 +54,15 @@ class Product(AggregateRoot):
     def name(self) -> ProductName:
         return self._name
 
+    @property
+    def price(self) -> ProductPrice:
+        return self._price
+
     def to_primitives(self) -> Dict[str, Any]:
         return {
             'id': self._id.value,
             'name': self._name.value,
+            'price': self._price.value,
         }
 
     def __eq__(self, other) -> bool:
@@ -63,6 +74,7 @@ class Product(AggregateRoot):
         attrs: dict = {
             'id': self._id,
             'name': self._name,
+            'price': self._price,
         }
 
         attrs_str: str = ', '.join(

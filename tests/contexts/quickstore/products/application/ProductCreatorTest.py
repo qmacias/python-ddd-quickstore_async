@@ -18,6 +18,6 @@ class ProductCreatorTest(IsolatedAsyncioTestCase):
         repository = AsyncMock(spec=ProductRepository)
         application_service = ProductCreator(repository)
 
-        await application_service(str(product.id), str(product.name))
+        await application_service(str(product.id), str(product.name), int(product.price))
 
         repository.save.assert_called_once_with(product)
