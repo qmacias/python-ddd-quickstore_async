@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.apps.container import container, config_eventbus
 
 from src.apps.quickstore.backend.routers.users_router import users_router
+from src.apps.quickstore.backend.routers.products_router import products_router
 from src.apps.quickstore.backend.routers.statuscheck_router import statuscheck_router
 
 from src.contexts.shared.domain.EventSubscriber import EventSubscriber
@@ -22,6 +23,7 @@ quickstore_backend_app.add_middleware(
 )
 
 quickstore_backend_app.include_router(users_router)
+quickstore_backend_app.include_router(products_router)
 quickstore_backend_app.include_router(statuscheck_router)
 
 

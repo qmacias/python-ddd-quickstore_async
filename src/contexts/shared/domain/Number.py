@@ -13,7 +13,7 @@ class Number(ValueObject[int]):
     @classmethod
     def random(
             cls,
-            min: int = 1,
+            min: int = 0,
             max: int = 100,
     ) -> 'Number':
         return cls(randint(min, max))

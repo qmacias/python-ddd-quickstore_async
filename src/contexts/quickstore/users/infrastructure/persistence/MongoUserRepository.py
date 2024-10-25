@@ -1,5 +1,8 @@
+from typing import Optional
+
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from src.contexts.quickstore.users.domain.UserId import UserId
 from src.contexts.shared.infrastructure.persistence.MongoRepository import MongoRepository
 
 from src.contexts.quickstore.users.domain.User import User
@@ -25,3 +28,12 @@ class MongoUserRepository(MongoRepository, UserRepository):
 
     async def save(self, user: User) -> None:
         await self.persist(user.id.value, user)
+
+    async def search(self, user_id: UserId) -> Optional[User]:
+        document = await self._collection.find_one({'_id': user_id.value})
+
+        return User.from_primitives({
+            'id': document.get('_id'),
+            'name': document.get('name'),
+            'email': document.get('email'),
+        }) if document else None

@@ -27,7 +27,9 @@ test:
 	$(PYTHON) -m unittest discover -s ./tests/contexts/backoffice/products -p '*Test.py'
 	$(PYTHON) -m unittest discover -s ./tests/contexts/backoffice/users -p '*Test.py'
 	$(BEHAVE) tests/apps/quickstore/backend/features/status-check.feature
+	$(BEHAVE) tests/apps/quickstore/backend/features/productreviews
 	$(BEHAVE) tests/apps/quickstore/backend/features/users
+	$(PYTHON) -m unittest discover -s ./tests/contexts/quickstore/productreviews -p '*Test.py'
 	$(PYTHON) -m unittest discover -s ./tests/contexts/quickstore/products -p '*Test.py'
 	$(PYTHON) -m unittest discover -s ./tests/contexts/quickstore/users -p '*Test.py'
 

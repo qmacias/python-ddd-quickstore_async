@@ -1,7 +1,8 @@
-from typing import Sequence
+from typing import Sequence, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from src.contexts.quickstore.products.domain.ProductId import ProductId
 from src.contexts.shared.infrastructure.persistence.MongoRepository import MongoRepository
 
 from src.contexts.quickstore.products.domain.Product import Product
@@ -9,6 +10,8 @@ from src.contexts.quickstore.products.domain.ProductRepository import ProductRep
 
 
 class MongoProductRepository(MongoRepository, ProductRepository):
+
+
     __DATABASE_NAME = 'quickstore-backend-dev'
     __COLLECTION_NAME = 'products'
 
@@ -27,6 +30,15 @@ class MongoProductRepository(MongoRepository, ProductRepository):
 
     async def save(self, product: Product) -> None:
         await self.persist(product.id.value, product)
+
+    async def search(self, product_id: ProductId) -> Optional[Product]:
+        document = await self._collection.find_one({'_id': product_id.value})
+
+        return Product.from_primitives({
+            'id': document.get('_id'),
+            'name': document.get('name'),
+            'price': document.get('price'),
+        }) if document else None
 
     async def search_all(self) -> Sequence[Product]:
         documents = await self._collection.find({}).to_list(None)
