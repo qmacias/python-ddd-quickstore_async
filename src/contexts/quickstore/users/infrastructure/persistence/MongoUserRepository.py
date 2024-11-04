@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import TypedDict, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -7,6 +7,12 @@ from src.contexts.shared.infrastructure.persistence.MongoRepository import Mongo
 
 from src.contexts.quickstore.users.domain.User import User
 from src.contexts.quickstore.users.domain.UserRepository import UserRepository
+
+
+class UserDocument(TypedDict):
+    _id: str
+    name: str
+    email: str
 
 
 class MongoUserRepository(MongoRepository, UserRepository):
@@ -30,10 +36,6 @@ class MongoUserRepository(MongoRepository, UserRepository):
         await self.persist(user.id.value, user)
 
     async def search(self, user_id: UserId) -> Optional[User]:
-        document = await self._collection.find_one({'_id': user_id.value})
+        document: UserDocument = await self._collection.find_one({'_id': user_id.value})
 
-        return User.from_primitives({
-            'id': document.get('_id'),
-            'name': document.get('name'),
-            'email': document.get('email'),
-        }) if document else None
+        return User.from_primitives({'id': document['_id'], 'name': document['name'], 'email': document['email']}) if document else None

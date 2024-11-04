@@ -1,4 +1,4 @@
-from typing import Sequence, Optional
+from typing import TypedDict, Optional, Sequence, List
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -9,9 +9,13 @@ from src.contexts.quickstore.products.domain.Product import Product
 from src.contexts.quickstore.products.domain.ProductRepository import ProductRepository
 
 
+class ProductDocument(TypedDict):
+    _id: str
+    name: str
+    price: int
+
+
 class MongoProductRepository(MongoRepository, ProductRepository):
-
-
     __DATABASE_NAME = 'quickstore-backend-dev'
     __COLLECTION_NAME = 'products'
 
@@ -32,22 +36,11 @@ class MongoProductRepository(MongoRepository, ProductRepository):
         await self.persist(product.id.value, product)
 
     async def search(self, product_id: ProductId) -> Optional[Product]:
-        document = await self._collection.find_one({'_id': product_id.value})
+        document: ProductDocument = await self._collection.find_one({'_id': product_id.value})
 
-        return Product.from_primitives({
-            'id': document.get('_id'),
-            'name': document.get('name'),
-            'price': document.get('price'),
-        }) if document else None
+        return Product.from_primitives({'id': document['_id'], 'name': document['name'], 'price': document['price']}) if document else None
 
     async def search_all(self) -> Sequence[Product]:
-        documents = await self._collection.find({}).to_list(None)
+        documents: List[ProductDocument] = await self._collection.find({}).to_list(None)
 
-        return [
-            Product.from_primitives({
-                'id': document.get('_id'),
-                'name': document.get('name'),
-                'price': document.get('price'),
-            })
-            for document in documents
-        ]
+        return [Product.from_primitives({'id': document['_id'], 'name': document['name'], 'price': document['price']}) for document in documents]
